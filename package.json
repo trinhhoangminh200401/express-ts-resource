@@ -1,0 +1,28 @@
+{
+  "name": "express-resources",
+  "version": "1.0.0",
+  "description": "this is source express",
+  "license": "ISC",
+  "author": "Minh&Trung",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "rimraf dist && npx tsc",
+    "start": "node dist/server.js",
+    "prestart": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npx tsc -w\" \"nodemon dist/server.js\""
+  },
+  "dependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "concurrently": "^9.2.0",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10",
+    "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.0.1",
+    "routing-controllers": "^0.11.3",
+    "typedi": "^0.10.0",
+    "typescript": "^5.9.2"
+  }
+}
