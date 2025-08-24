@@ -1,10 +1,10 @@
 import { Service } from "typedi";
-import { User } from "../models/user.model.js";
+import { User } from "../interface/user.interface.js";
 
 @Service()
 export class UserService {
   private users: User[] = [
-    { id: 1, name: "Alice" },
+    { id: 1, name: "Kiet" },
     { id: 2, name: "Bob" }
   ];
 

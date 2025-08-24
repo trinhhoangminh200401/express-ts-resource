@@ -1,5 +1,5 @@
 import { UserService } from "../service/user.service.js";
-import { User } from "../models/user.model.js";
+import { User } from "../interface/user.model.js";
 export declare class UserController {
     private userService;
     constructor(userService: UserService);

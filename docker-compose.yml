@@ -1,0 +1,30 @@
+services:
+  mysql_db:
+    image: mysql:8.0
+    container_name: mysql_db_container
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: express_resource
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  node_app:
+    build: .
+    container_name: node_app_container
+    restart: unless-stopped
+    depends_on:
+      - mysql_db
+    environment:
+      DB_HOST: mysql_db
+      DB_USER: root
+      DB_PASSWORD: 123456
+      DB_NAME: express_resource
+      DB_PORT: 3306
+    ports:
+      - "3000:3000"
+
+volumes:
+  mysql_data:

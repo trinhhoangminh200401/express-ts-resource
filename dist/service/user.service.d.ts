@@ -1,4 +1,4 @@
-import { User } from "../models/user.model.js";
+import { User } from "../interface/user.model.js";
 export declare class UserService {
     private users;
     getAll(): User[];

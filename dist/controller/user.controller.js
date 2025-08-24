@@ -42,7 +42,7 @@ __decorate([
 ], UserController.prototype, "getById", null);
 UserController = __decorate([
     Service(),
-    JsonController(""),
+    JsonController("/users"),
     __param(0, Inject()),
     __metadata("design:paramtypes", [UserService])
 ], UserController);

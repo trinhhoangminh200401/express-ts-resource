@@ -1,10 +1,10 @@
 import { JsonController, Get, Param } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { UserService } from "../service/user.service.js";
-import { User } from "../models/user.model.js";
+import { User } from "../interface/user.interface.js";
 
 @Service()  
-@JsonController("")
+@JsonController("/users")
 export class UserController {
   constructor(
     @Inject()
