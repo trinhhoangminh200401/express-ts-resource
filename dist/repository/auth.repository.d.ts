@@ -1,4 +1,10 @@
+import { IRegister, IAuthenticate, IResponseToken } from "../interface/user.interface.js";
+import ExcuteQuery from "../config/excute.config.js";
 export declare class AuthRepository {
-    authenticate: () => Promise<void>;
+    private excuteQuery;
+    constructor(excuteQuery: ExcuteQuery);
+    authenticate: (credential: IAuthenticate) => Promise<IResponseToken | null>;
+    register: (credential: IRegister) => Promise<number>;
+    verifyToken: (userId: number, token: string) => Promise<boolean>;
 }
 //# sourceMappingURL=auth.repository.d.ts.map

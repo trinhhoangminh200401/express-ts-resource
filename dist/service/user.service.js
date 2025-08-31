@@ -8,8 +8,16 @@ import { Service } from "typedi";
 let UserService = class UserService {
     constructor() {
         this.users = [
-            { id: 1, name: "Kiet" },
-            { id: 2, name: "Bob" }
+            {
+                id: 1, name: "Kiet",
+                email: "ádsa",
+                password_hash: "ádsadsa"
+            },
+            {
+                id: 2, name: "Bob",
+                email: "ấdsa",
+                password_hash: "ádsa"
+            }
         ];
     }
     getAll() {

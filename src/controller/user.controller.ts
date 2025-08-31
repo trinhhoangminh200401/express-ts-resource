@@ -1,7 +1,7 @@
 import { JsonController, Get, Param } from "routing-controllers";
 import { Inject, Service } from "typedi";
 import { UserService } from "../service/user.service.js";
-import { User } from "../interface/user.interface.js";
+import { IUser } from "../interface/user.interface.js";
 
 @Service()  
 @JsonController("/users")
@@ -12,16 +12,16 @@ export class UserController {
   ) {}
 
   @Get("/")
-  getAll(): User[] {
+  getAll(): IUser[] {
     return this.userService.getAll();
   }
 
   @Get("/:id")
-  getById(@Param("id") id: number): User | undefined {
+  getById(@Param("id") id: number): IUser | undefined {
     return this.userService.getById(id);
   }
 
-  customList(): User[] {
+  customList(): IUser[] {
     return this.userService.getAll().filter(u => u.id > 0);
   }
 }

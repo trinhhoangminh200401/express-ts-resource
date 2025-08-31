@@ -1,6 +1,6 @@
 import { ExpressMiddlewareInterface } from "routing-controllers";
 import { Response, Request, NextFunction } from "express";
 export declare class AuthenticationMiddleware implements ExpressMiddlewareInterface {
-    use(request: Request, response: Response, next: NextFunction): void;
+    use(request: Request, response: Response, next: NextFunction): Response<any, Record<string, any>> | undefined;
 }
 //# sourceMappingURL=middleware.d.ts.map

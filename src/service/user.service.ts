@@ -1,19 +1,27 @@
 import { Service } from "typedi";
-import { User } from "../interface/user.interface.js";
+import { IUser } from "../interface/user.interface.js";
 
 @Service()
 export class UserService {
-  private users: User[] = [
-    { id: 1, name: "Kiet" },
-    { id: 2, name: "Bob" }
+  private users: IUser[] = [
+    {
+      id: 1, name: "Kiet",
+      email: "ádsa",
+      password_hash: "ádsadsa"
+    },
+    {
+      id: 2, name: "Bob",
+      email: "ấdsa",
+      password_hash: "ádsa"
+    }
   ];
 
-  getAll(): User[] {
+  getAll(): IUser[] {
     return this.users;
   }
   
 
-  getById(id: number): User | undefined {
+  getById(id: number): IUser | undefined {
     return this.users.find(u => u.id === id);
   }
 }
