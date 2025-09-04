@@ -4,7 +4,12 @@ declare class ExcuteQuery {
     constructor();
     getConnection(): Promise<PoolConnection>;
     select<T extends RowDataPacket[]>(query: string, params?: any[]): Promise<T>;
-    excute(query: string, params?: any[]): Promise<number>;
+    insert(query: string, params?: any[]): Promise<number>;
+    execute(query: string, params?: any[]): Promise<number>;
+    excuteMany(query: string, params: any[][]): Promise<{
+        affected: number;
+        insertIds: number[];
+    }>;
 }
 export default ExcuteQuery;
 //# sourceMappingURL=excute.config.d.ts.map

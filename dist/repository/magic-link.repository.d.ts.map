@@ -1,0 +1,1 @@
+{"version":3,"file":"magic-link.repository.d.ts","sourceRoot":"","sources":["../../src/repository/magic-link.repository.ts"],"names":[],"mappings":"AACA,OAAO,WAAW,MAAM,4BAA4B,CAAC;AAErD,qBACa,mBAAmB;IAEF,OAAO,CAAC,WAAW;gBAAX,WAAW,EAAE,WAAW;IAChD,cAAc,CAAC,MAAM,EAAE,MAAM,EAAE,KAAK,EAAE,MAAM;IAK5C,gBAAgB,CAAC,MAAM,EAAE,MAAM;IAY/B,MAAM,CAAC,MAAM,EAAE,MAAM,EAAE,KAAK,EAAE,MAAM;CAMjD"}

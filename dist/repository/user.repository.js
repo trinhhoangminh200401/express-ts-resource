@@ -16,10 +16,10 @@ let UserRepository = class UserRepository {
     constructor(excuteQuery) {
         this.excuteQuery = excuteQuery;
     }
-    async checkKingEmail(email) {
-        const result = await this.excuteQuery.select("SELECT id  FROM users WHERE email = ?", [email]);
+    async findByEmail(email) {
+        const result = await this.excuteQuery.select("SELECT id,email  FROM users WHERE email = ?", [email]);
         console.log('debug', result);
-        return result;
+        return result.length > 0 ? result[0] : null;
     }
 };
 UserRepository = __decorate([

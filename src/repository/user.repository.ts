@@ -6,9 +6,9 @@ import { RowDataPacket } from "mysql2";
 @Service()
 export class UserRepository{
   constructor(@Inject() private excuteQuery: ExcuteQuery) {}
-   async checkKingEmail(email:string){
-    const result= await this.excuteQuery.select<IUser & RowDataPacket[]>("SELECT id  FROM users WHERE email = ?",[email]);
+   async  findByEmail(email:string){
+    const result= await this.excuteQuery.select<IUser & RowDataPacket[]>("SELECT id,email  FROM users WHERE email = ?",[email]);
      console.log('debug',result)
-     return result;
+    return result.length > 0 ? result[0] : null;
 }
 }

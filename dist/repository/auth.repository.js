@@ -34,28 +34,44 @@ let AuthRepository = class AuthRepository {
             const refresh_token = jwt.sign({ userId: dbUser.id }, JWT_KEY, { expiresIn: '7d' });
             return { access_token, refresh_token };
         };
-        this.register = async (credential) => {
-            const hash = await bcrypt.hash(credential.password_hash, 10);
-            const query = `INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)`;
-            const result = await this.excuteQuery.excute(query, [credential.name, credential.email, hash]);
-            return result;
-        };
-        this.verifyToken = async (userId, token) => {
+        this.register = async (credential, token) => {
             const connection = await this.excuteQuery.getConnection();
             try {
                 await connection.beginTransaction();
-                const query = `Update users set email_verified_at=NOW() where id = ?`;
-                const query2 = `INSERT INTO magic_links ( user_id,token_hash,expires_at,used_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE),null)`;
-                await this.excuteQuery.excute(query, [userId]);
-                await this.excuteQuery.excute(query2, [userId, token]);
+                const hash = await bcrypt.hash(credential.password_hash, 10);
+                const query = `INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)`;
+                const result = await this.excuteQuery.insert(query, [credential.name, credential.email, hash]);
+                const userId = result;
+                const query2 = `
+         INSERT INTO magic_links (user_id, token_hash, expires_at, used_at)
+         VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE), NULL)
+      `;
+                await this.excuteQuery.insert(query2, [userId, token]);
                 await connection.commit();
-                return true;
+                return result;
             }
             catch (error) {
-                console.log(error);
                 await connection.rollback();
-                return false;
+                throw error;
             }
+        };
+        this.verifyToken = async (userId, token) => {
+            const query = `
+         SELECT * FROM magic_links
+         WHERE token_hash = ? AND user_id = ?
+           AND used_at IS NULL
+           AND expires_at > NOW()
+         LIMIT 1
+      `;
+            const rows = await this.excuteQuery.select(query, [token, userId]);
+            if (rows.length === 0)
+                return false;
+            const magicLink = rows[0];
+            const updateLink = `UPDATE magic_links SET used_at = NOW() WHERE id = ?`;
+            await this.excuteQuery.execute(updateLink, [magicLink.id]);
+            const updateUser = `UPDATE users SET email_verified_at = NOW() WHERE id = ?`;
+            await this.excuteQuery.execute(updateUser, [magicLink.user_id]);
+            return true;
         };
     }
 };

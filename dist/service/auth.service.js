@@ -16,12 +16,14 @@ import { MailService } from "./mailer.service.js";
 import { randomBytes } from "crypto";
 import dotenv from "dotenv";
 import { UserRepository } from "../repository/user.repository.js";
+import { MagicLinkRepository } from "../repository/magic-link.repository.js";
 dotenv.config();
 let AuthService = class AuthService {
-    constructor(authRepository, mailService, userRepository) {
+    constructor(authRepository, mailService, userRepository, magicLinkRepository) {
         this.authRepository = authRepository;
         this.mailService = mailService;
         this.userRepository = userRepository;
+        this.magicLinkRepository = magicLinkRepository;
     }
     async login(credential) {
         const data = await this.authRepository.authenticate(credential);
@@ -34,22 +36,33 @@ let AuthService = class AuthService {
         };
     }
     async register(credential) {
-        try {
-            const existingUser = await this.userRepository.checkKingEmail(credential.email);
-            if (existingUser.length > 0) {
+        // 1. Check user tồn tại chưa
+        const existingUser = await this.userRepository.findByEmail(credential.email);
+        if (existingUser) {
+            // 2. Nếu user đã verify rồi -> chặn
+            if (existingUser.email_verified_at) {
                 return { success: false, error: "Email already in use" };
             }
-            const user = await this.authRepository.register(credential);
-            if (user) {
-                const token = randomBytes(32).toString('hex');
-                const url = `${process.env.BASE_URL}/auth/verify?token=${token}&userId=${user}`;
-                this.mailService.sendMail(credential.email, "Welcome to Our Service", `Click this link to verify your email: ${url}`).catch(err => console.error("Mail sending failed:", err));
+            // 3. Nếu user chưa verify
+            const magicLink = await this.magicLinkRepository.findByLatestUser(existingUser.id);
+            if (magicLink && new Date(magicLink.expires_at) > new Date() && !magicLink.used_at) {
+                // link còn hạn
+                return { success: false, error: "You already registered, please check your email for verification link" };
             }
-            return { success: true, message: "User registered successfully" };
+            // link hết hạn -> tạo mới
+            const newToken = randomBytes(32).toString("hex");
+            await this.magicLinkRepository.create(existingUser.id, newToken);
+            console.log('email', existingUser);
+            // gửi lại mail
+            const url = `${process.env.BASE_URL}/auth/verify?token=${newToken}&userId=${existingUser.id}`;
+            this.mailService.sendMail(existingUser.email, "Verify your email", `Click this link: ${url}`);
+            return { success: true, message: "Verification link expired, a new one has been sent" };
         }
-        catch (error) {
-            return { success: false, error: "Registration failed" };
-        }
+        const token = randomBytes(32).toString("hex");
+        const userId = await this.authRepository.register(credential, token);
+        const url = `${process.env.BASE_URL}/auth/verify?token=${token}&userId=${userId}`;
+        this.mailService.sendMail(credential.email, "Verify your email", `Click this link: ${url}`);
+        return { success: true, message: "User registered successfully, please verify via email" };
     }
     async verifyEmail(userId, token) {
         const isVerified = await this.authRepository.verifyToken(userId, token);
@@ -63,7 +76,7 @@ let AuthService = class AuthService {
         else {
             return {
                 success: false,
-                error: "Email verification failed",
+                error: "Email verification failed please give another link",
             };
         }
     }
@@ -71,7 +84,7 @@ let AuthService = class AuthService {
 AuthService = __decorate([
     Service(),
     __param(0, Inject()),
-    __metadata("design:paramtypes", [AuthRepository, MailService, UserRepository])
+    __metadata("design:paramtypes", [AuthRepository, MailService, UserRepository, MagicLinkRepository])
 ], AuthService);
 export { AuthService };
 //# sourceMappingURL=auth.service.js.map

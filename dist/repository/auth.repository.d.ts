@@ -4,7 +4,7 @@ export declare class AuthRepository {
     private excuteQuery;
     constructor(excuteQuery: ExcuteQuery);
     authenticate: (credential: IAuthenticate) => Promise<IResponseToken | null>;
-    register: (credential: IRegister) => Promise<number>;
+    register: (credential: IRegister, token: string) => Promise<number>;
     verifyToken: (userId: number, token: string) => Promise<boolean>;
 }
 //# sourceMappingURL=auth.repository.d.ts.map

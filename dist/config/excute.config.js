@@ -20,9 +20,38 @@ let ExcuteQuery = class ExcuteQuery {
         const [rows] = await this.pool.execute(query, params);
         return rows;
     }
-    async excute(query, params = []) {
+    // insert return id 
+    async insert(query, params = []) {
         const [result] = await this.pool.execute(query, params);
         return result.insertId;
+    }
+    // update/delete return affected rows
+    async execute(query, params = []) {
+        const [result] = await this.pool.execute(query, params);
+        return result.affectedRows;
+    }
+    async excuteMany(query, params) {
+        const conn = await this.pool.getConnection();
+        try {
+            await conn.beginTransaction();
+            let affected = 0;
+            const insertIds = [];
+            for (const param of params) {
+                const [result] = await conn.execute(query, param);
+                affected += result.affectedRows;
+                if (result.insertId)
+                    insertIds.push(result.insertId);
+            }
+            await conn.commit();
+            return { affected, insertIds };
+        }
+        catch (error) {
+            await conn.rollback();
+            throw error;
+        }
+        finally {
+            conn.release();
+        }
     }
 };
 ExcuteQuery = __decorate([
